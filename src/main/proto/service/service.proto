@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package ="com.proto.service";
+option java_outer_classname = "ServiceProto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+message Customer {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message CustomerList {
+  repeated Customer resultList = 1;
+  google.protobuf.Int64Value resultCount = 2;
+}
+
+service CustomerService {
+  rpc create(Customer) returns (Customer) {};
+  rpc update(Customer) returns (Customer) {};
+  rpc findById(google.protobuf.Int64Value) returns (Customer) {};
+  rpc list(google.protobuf.Empty) returns (CustomerList) {};
+  rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
+
+}
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  int64 price = 3;
+}
+
+message ProductList {
+  repeated Product resultList = 1;
+  google.protobuf.Int64Value resultCount = 2;
+}
+
+service ProductService {
+  rpc create(Product) returns (Product) {};
+  rpc update(Product) returns (Product) {};
+  rpc findById(google.protobuf.Int64Value) returns (Product) {};
+  rpc list(google.protobuf.Empty) returns (ProductList) {};
+  rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
+
+}
