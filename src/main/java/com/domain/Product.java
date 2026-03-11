@@ -1,6 +1,9 @@
 package com.domain;
 
-import jakarta.persistence.*;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,10 +12,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-public class Product {
-    @Id
-//    @SequenceGenerator(name = "products_id_seq", allocationSize = 1)
-//    @GeneratedValue(generator = "products_id_seq")
+public class Product extends PanacheEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
