@@ -7,22 +7,34 @@
     http://www.liquibase.org/xml/ns/dbchangelog
     https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet author="onboarding1" id="1">
+
+    <changeSet author="onboarding1" id="20240311-create-customer-table">
+        <comment>Створення таблиці customer для зберігання базових даних клієнтів</comment>
         <createTable tableName="customer" ifNotExists="true">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)"/>
-            <column name="email" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true" uniqueConstraintName="uk_customer_email" nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
-    <changeSet author="onboarding1" id="2" >
+
+    <changeSet author="onboarding1" id="20240311-create-product-table">
+        <comment>Створення таблиці product для зберігання базових даних про товари</comment>
         <createTable tableName="product" ifNotExists="true">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)"/>
-            <column name="price" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>
