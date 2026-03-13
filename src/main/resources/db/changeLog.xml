@@ -37,4 +37,102 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-customer-audit-table">
+        <comment>Створення таблиці аудиту таблиці customer</comment>
+        <createTable tableName="customer_aud" ifNotExists="true">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="changed_at" type="TIME"/>
+            <column name="operation" type="VARCHAR(255)"/>
+            <column name="customer_id" type="BIGINT"/>
+            <column name="customer_name" type="VARCHAR(255)"/>
+            <column name="customer_email" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-auditlog-function-for-customer" >
+        <sql splitStatements="false">
+            CREATE OR REPLACE FUNCTION auditlog_customer() RETURNS TRIGGER AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    INSERT INTO customer_aud(changed_at, operation, customer_id, customer_name, customer_email)
+                    VALUES (current_timestamp, 'CREATE', NEW.id, NEW.name, NEW.email);
+                ELSIF (TG_OP = 'UPDATE') THEN
+                    INSERT INTO customer_aud(changed_at, operation, customer_id, customer_name, customer_email)
+                    VALUES (current_timestamp, 'UPDATE', NEW.id, NEW.name, NEW.email);
+                ELSIF (TG_OP = 'DELETE') THEN
+                    INSERT INTO customer_aud(changed_at, operation, customer_id, customer_name, customer_email)
+                    VALUES (current_timestamp, 'DELETE', OLD.id, OLD.name, OLD.email);
+                END IF;
+            RETURN NULL;
+            END;
+            $$ LANGUAGE plpgsql;
+        </sql>
+        <rollback>
+            DROP FUNCTION IF EXISTS auditlog_customer();
+        </rollback>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-trigger-for-customer">
+        <sql>
+            CREATE TRIGGER auditing_customer
+                AFTER INSERT OR UPDATE OR DELETE ON customer
+                FOR EACH ROW
+                EXECUTE FUNCTION auditlog_customer();
+        </sql>
+        <rollback>
+            DROP TRIGGER IF EXISTS auditing_customer ON customer;
+        </rollback>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-product-audit-table">
+        <comment>Створення таблиці аудиту таблиці product</comment>
+        <createTable tableName="product_aud" ifNotExists="true">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="changed_at" type="TIME"/>
+            <column name="operation" type="VARCHAR(255)"/>
+            <column name="product_id" type="BIGINT"/>
+            <column name="product_name" type="VARCHAR(255)"/>
+            <column name="product_price" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-auditlog-function-for-product" >
+        <sql splitStatements="false">
+            CREATE OR REPLACE FUNCTION auditlog_product() RETURNS TRIGGER AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    INSERT INTO product_aud(changed_at, operation, product_id, product_name, product_price)
+                    VALUES (current_timestamp, 'CREATE', NEW.id, NEW.name, NEW.price);
+                ELSIF (TG_OP = 'UPDATE') THEN
+                    INSERT INTO product_aud(changed_at, operation, product_id, product_name, product_price)
+                    VALUES (current_timestamp, 'UPDATE', NEW.id, NEW.name, NEW.price);
+                ELSIF (TG_OP = 'DELETE') THEN
+                    INSERT INTO product_aud(changed_at, operation, product_id, product_name, product_price)
+                    VALUES (current_timestamp, 'DELETE', OLD.id, OLD.name, OLD.price);
+            END IF;
+            RETURN NULL;
+            END;
+            $$ LANGUAGE plpgsql;
+        </sql>
+        <rollback>
+            DROP FUNCTION IF EXISTS auditlog_product();
+        </rollback>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-trigger-for-product">
+        <sql>
+            CREATE TRIGGER auditing_product
+                AFTER INSERT OR UPDATE OR DELETE ON product
+                FOR EACH ROW
+                EXECUTE FUNCTION auditlog_product();
+        </sql>
+        <rollback>
+            DROP TRIGGER IF EXISTS auditing_product ON product;
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

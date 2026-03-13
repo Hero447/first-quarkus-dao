@@ -70,7 +70,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Transactional
     @WithTransaction
     public Uni<BoolValue> delete(Int64Value request) {
         log.info("Deleting product by id. id: " + request.getValue());
