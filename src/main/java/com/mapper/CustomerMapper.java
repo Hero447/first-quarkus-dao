@@ -3,11 +3,12 @@ package com.mapper;
 
 import com.domain.Customer;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
 
 import java.util.List;
 
-@Mapper(componentModel = "jakarta")
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA)
 public interface CustomerMapper {
     Customer customerToEntity(com.proto.service.Customer customer);
 
