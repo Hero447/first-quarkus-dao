@@ -1,0 +1,45 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="onboarding1" id="20240313-create-customer-audit-table">
+        <comment>Створення таблиці аудиту таблиці customer</comment>
+        <createTable tableName="customer_aud" ifNotExists="true">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="changed_at" type="TIME"/>
+            <column name="operation" type="VARCHAR(255)"/>
+            <column name="customer_id" type="BIGINT"/>
+            <column name="customer_name" type="VARCHAR(255)"/>
+            <column name="customer_email" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-auditlog-function-for-customer" >
+        <sqlFile path="db/scripts/auditlog_customer_trigger_function.sql"
+                 relativeToChangelogFile="false"
+                 splitStatements="false"
+                 stripComments="true"
+                 endDelimiter=";"/>
+        <rollback>
+            DROP FUNCTION IF EXISTS auditlog_customer();
+        </rollback>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240313-create-trigger-for-customer">
+        <sqlFile path="db/scripts/create_trigger_auditing_customer.sql"
+                 relativeToChangelogFile="false"
+                 splitStatements="false"
+                 stripComments="true"
+                 endDelimiter=";"/>
+        <rollback>
+            DROP TRIGGER IF EXISTS auditing_customer ON customer;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
