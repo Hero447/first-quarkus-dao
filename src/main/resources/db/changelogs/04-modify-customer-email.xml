@@ -1,4 +1,3 @@
-<?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -7,9 +6,10 @@
     http://www.liquibase.org/xml/ns/dbchangelog
     https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/changelogs/01-create-customer-and-product.xml"/>
-    <include file="db/changelogs/02-create-customer-audt.xml"/>
-    <include file="db/changelogs/03-create-product-audit.xml"/>
-    <include file="db/changelogs/04-modify-customer-email.xml"/>
+    <changeSet author="onboarding1" id="20240318-modify-customer-email">
+        <addNotNullConstraint tableName="customer"
+                              columnName="email"
+                              columnDataType="varchar(255)"/>
+    </changeSet>
 
 </databaseChangeLog>
