@@ -37,11 +37,16 @@ message ProductList {
   google.protobuf.Int64Value resultCount = 2;
 }
 
+message ProductFilter {
+  optional int64 minPrice = 1;
+  optional int64 maxPrice = 2;
+}
+
 service ProductService {
   rpc create(Product) returns (Product) {};
   rpc update(Product) returns (Product) {};
   rpc findById(google.protobuf.Int64Value) returns (Product) {};
-  rpc list(google.protobuf.Empty) returns (ProductList) {};
+  rpc list(ProductFilter) returns (ProductList) {};
   rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
 
 }

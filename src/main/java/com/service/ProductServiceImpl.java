@@ -2,7 +2,6 @@ package com.service;
 
 import com.domain.Product;
 import com.google.protobuf.BoolValue;
-import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
 import com.mapper.ProductMapper;
 import com.proto.service.*;
@@ -12,7 +11,9 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @GrpcService
@@ -60,9 +61,22 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @WithTransaction
-    public Uni<ProductList> list(Empty request) {
+    public Uni<ProductList> list(ProductFilter productFilter) {
         log.info("Listing all products.");
-        Uni<List<Product>> entityList = repository.listAll();
+        StringBuilder query = new StringBuilder("1=1");
+        Map<String, Object> params = new HashMap<>();
+
+        if (productFilter.hasMinPrice()) {
+            query.append(" and price >= :minPrice");
+            params.put("minPrice", productFilter.getMinPrice());
+        }
+
+        if (productFilter.hasMaxPrice()) {
+            query.append(" and price <= :maxPrice");
+            params.put("maxPrice", productFilter.getMaxPrice());
+        }
+
+        Uni<List<Product>> entityList = repository.list(query.toString(), params);
         return entityList.onItem().transform(list -> ProductList.newBuilder()
                 .addAllResultList(mapper.entityListToProductList(list))
                 .setResultCount(Int64Value.of(list.size()))
