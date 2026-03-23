@@ -11,42 +11,35 @@ import com.repository.CustomerRepository;
 import io.quarkus.grpc.GrpcService;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
 @GrpcService
+@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
     private final CustomerMapper mapper;
 
-    public CustomerServiceImpl(CustomerRepository repository, CustomerMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
-
     @Override
     @WithTransaction
     public Uni<com.proto.service.Customer> create(com.proto.service.Customer request) {
         log.info("Creating a new customer.");
-        Customer entity = mapper.customerToEntity(request);
-        entity.setId(null);
-        return repository.persistAndFlush(entity).map(mapper::entityToCustomer);
+        return repository.persistAndFlush(mapper.customerToEntity(request)).map(mapper::entityToCustomer);
     }
 
     @Override
     @WithTransaction
     public Uni<com.proto.service.Customer> update(com.proto.service.Customer request) {
         log.info("Updating the customer. id: " + request.getId());
-        Customer entity = mapper.customerToEntity(request);
         return repository.findById(request.getId())
                 .onItem().ifNull().fail()
                 .onItem().ifNotNull().transformToUni(saved ->
                 {
-                    saved.setName(request.getName());
-                    saved.setEmail(request.getEmail());
+                    mapper.updateEntity(request, saved);
                     return repository.persistAndFlush(saved).onItem().transform(mapper::entityToCustomer);
                 });
     }

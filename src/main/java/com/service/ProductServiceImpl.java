@@ -9,6 +9,7 @@ import com.repository.ProductRepository;
 import io.quarkus.grpc.GrpcService;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -17,36 +18,28 @@ import java.util.Map;
 
 @Slf4j
 @GrpcService
+@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final ProductMapper mapper;
 
-    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
-
     @Override
     @WithTransaction
     public Uni<com.proto.service.Product> create(com.proto.service.Product request) {
         log.info("Creating a new product.");
-        Product entity = mapper.productToEntity(request);
-        entity.setId(null);
-        return repository.persistAndFlush(entity).map(mapper::entityToProduct);
+        return repository.persistAndFlush(mapper.productToEntity(request)).map(mapper::entityToProduct);
     }
 
     @Override
     @WithTransaction
     public Uni<com.proto.service.Product> update(com.proto.service.Product request) {
         log.info("Updating product. id: " + request.getId());
-        Product entity = mapper.productToEntity(request);
         return repository.findById(request.getId())
                 .onItem().ifNull().fail()
                 .onItem().ifNotNull().transformToUni(saved ->
                 {
-                    saved.setName(request.getName());
-                    saved.setPrice(request.getPrice());
+                    mapper.updateEntity(request, saved);
                     return repository.persistAndFlush(saved).onItem().transform(mapper::entityToProduct);
                 });
     }
