@@ -9,6 +9,7 @@ import com.repository.ProductRepository;
 import io.quarkus.grpc.GrpcService;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +37,8 @@ public class ProductServiceImpl implements ProductService {
     public Uni<com.proto.service.Product> update(com.proto.service.Product request) {
         log.info("Updating product. id: " + request.getId());
         return repository.findById(request.getId())
-                .onItem().ifNull().fail()
+                .onItem().ifNull()
+                .failWith(()-> new EntityNotFoundException("Product with ID " + request.getId() + " not found"))
                 .onItem().ifNotNull().transformToUni(saved ->
                 {
                     mapper.updateEntity(request, saved);
@@ -49,7 +51,9 @@ public class ProductServiceImpl implements ProductService {
     public Uni<com.proto.service.Product> findById(Int64Value request) {
         log.info("Finding product. id: " + request.getValue());
         Uni<Product> entity = repository.findById(request.getValue());
-        return entity.onItem().ifNull().fail().map(mapper::entityToProduct);
+        return entity.onItem().ifNull()
+                .failWith(()-> new EntityNotFoundException("Product with ID " + request + " not found"))
+                .map(mapper::entityToProduct);
     }
 
     @Override

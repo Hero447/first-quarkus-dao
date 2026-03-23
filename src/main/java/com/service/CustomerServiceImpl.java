@@ -11,10 +11,12 @@ import com.repository.CustomerRepository;
 import io.quarkus.grpc.GrpcService;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @GrpcService
@@ -36,7 +38,8 @@ public class CustomerServiceImpl implements CustomerService {
     public Uni<com.proto.service.Customer> update(com.proto.service.Customer request) {
         log.info("Updating the customer. id: " + request.getId());
         return repository.findById(request.getId())
-                .onItem().ifNull().fail()
+                .onItem().ifNull()
+                .failWith(()-> new EntityNotFoundException("Customer with ID " + request.getId() + " not found"))
                 .onItem().ifNotNull().transformToUni(saved ->
                 {
                     mapper.updateEntity(request, saved);
@@ -49,7 +52,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Uni<com.proto.service.Customer> findById(Int64Value request) {
         log.info("Finding the customer. id: " + request.getValue());
         Uni<Customer> entity = repository.findById(request.getValue());
-        return entity.onItem().ifNull().fail().map(mapper::entityToCustomer);
+        return entity.onItem().ifNull()
+                .failWith(()-> new EntityNotFoundException("Customer with ID " + request + " not found"))
+                .map(mapper::entityToCustomer);
     }
 
     @Override
