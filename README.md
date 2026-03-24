@@ -1,59 +1,75 @@
-# first-quarkus-dao
+# 🛡️ First Quarkus DAO (gRPC Server)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This is a backend service built with **Quarkus**, designed to provide high-performance data access for products and customers. It acts as a **gRPC Server**, serving requests from the API gateway service.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+The project implements the **DAO (Data Access Object)** pattern with a fully **Reactive stack** to ensure non-blocking data processing and high scalability.
 
-## Running the application in dev mode
+## 🛠 Tech Stack
+*   **Java 21**
+*   **Quarkus** (gRPC Server)
+*   **Hibernate Reactive** (Non-blocking ORM)
+*   **Reactive PostgreSQL Client** (High-performance DB driver)
+*   **Quarkus Liquibase** (Database Schema Migrations)
+*   **Protocol Buffers (proto3)** (Service Definition)
 
-You can run your application in dev mode that enables live coding using:
+## 🔄 Reactive gRPC Architecture
+This service leverages the power of Mutiny (Reactive Streams) and gRPC to provide:
+*   **Non-blocking I/O**: Efficient resource usage under heavy load.
+*   **Strict Typing**: Synchronized communication via shared `.proto` files.
+*   **Scalability**: Optimized for cloud-native environments and high concurrency.
 
-```shell script
-./mvnw quarkus:dev
+
+## 🗄 Data Model
+The service manages the following entities:
+*   **Products**: Storage of items, pricing, and inventory data.
+*   **Customers**: Management of user profiles and personal information.
+
+## 🌐 Environment Variables
+
+To connect the service to a **PostgreSQL** database, you can use the following environment variables (or set them in `application.properties`):
+
+
+| Variable | Description | Default Value (example) |
+| :--- | :--- | :--- |
+| `QUARKUS_DATASOURCE_REACTIVE_URL` | Reactive connection string | `postgresql://localhost:5432/mydb` |
+| `QUARKUS_DATASOURCE_USERNAME` | Database user | `db_user` |
+| `QUARKUS_DATASOURCE_PASSWORD` | Database password | `db_password` |
+
+Example of setting via terminal:
+```shell
+export QUARKUS_DATASOURCE_REACTIVE_URL=vert.x-sql://db_host:5432/db_name
+export QUARKUS_DATASOURCE_USERNAME=admin
+export QUARKUS_DATASOURCE_PASSWORD=secret
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## 🚀 Getting Started
 
-## Packaging and running the application
+### Development Mode
+To start the gRPC server with **Live Coding** support:
+```shell
+./mvnw compile quarkus:dev
+```
 
-The application can be packaged using:
+### 🚀 Build and Run (JVM Mode)
 
-```shell script
+To create a standard JAR file and run it, use the following commands:
+
+```shell
 ./mvnw package
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## ⚙️ Configuration
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+The gRPC server by default listens on port `9000`. You can adjust this in `src/main/resources/application.properties`:
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```properties
+quarkus.grpc.server.port=9000
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## 📊 Monitoring
 
-## Creating a native executable
+*   **Health Checks**: [http://localhost:8082/q/health](http://localhost:8082/q/health) — Monitor the server and reactive database connection.
+*   **Dev UI**: [http://localhost:8082/q/dev](http://localhost:8082/q/dev) — Inspect gRPC services (available in Dev mode).
 
-You can create a native executable using:
 
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/first-quarkus-dao-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-- Liquibase ([guide](https://quarkus.io/guides/liquibase)): Handle your database schema migrations with Liquibase
