@@ -1,0 +1,21 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="onboarding1" id="20240325-add-isActive-to-customer_aud">
+        <addColumn tableName="customer_aud">
+            <column name="customer_is_active" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="onboarding1" id="20240325-add-lastActivity-to-customer_aud">
+        <addColumn tableName="customer_aud">
+            <column name="customer_last_activity" type="TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

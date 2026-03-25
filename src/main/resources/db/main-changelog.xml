@@ -11,5 +11,9 @@
     <include file="db/changelogs/02-create-customer-audt.xml"/>
     <include file="db/changelogs/03-create-product-audit.xml"/>
     <include file="db/changelogs/04-modify-customer-email.xml"/>
+    <include file="/db/changelogs/05-add-isActive-and-lastActivity-columns-to-customer.xml"/>
+    <include file="/db/changelogs/06-add-isActive-and-lastActivity-columns-to-customer_aud.xml"/>
+    <include file="/db/changelogs/07-update-customer-trigger-function.xml"/>
+    <include file="/db/changelogs/08-update-active-column-name.xml"/>
 
 </databaseChangeLog>

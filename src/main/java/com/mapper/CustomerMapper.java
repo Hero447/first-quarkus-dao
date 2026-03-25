@@ -7,7 +7,7 @@ import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA)
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA, uses = {ProtoTimeMapper.class})
 public interface CustomerMapper {
     @Mapping(target = "id", expression = "java(null)")
     Customer customerToEntityNoId(com.proto.service.Customer customer);

@@ -5,11 +5,14 @@ option java_package ="com.proto.service";
 option java_outer_classname = "CustomerProto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 message Customer {
   int64 id = 1;
   string name = 2;
   string email = 3;
+  bool active = 4;
+  google.protobuf.Timestamp last_activity = 5;
 }
 
 message CustomerList {

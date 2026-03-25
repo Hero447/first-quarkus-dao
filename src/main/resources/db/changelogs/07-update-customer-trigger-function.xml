@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="onboarding1" id="20240325-update-auditlog-function" runOnChange="true" >
+        <sqlFile path="db/scripts/auditlog_customer_trigger_function_v2.sql"
+                 relativeToChangelogFile="false"
+                 splitStatements="false"
+                 stripComments="true"
+                 endDelimiter=";"/>
+        <rollback>
+            DROP FUNCTION IF EXISTS auditlog_customer();
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
